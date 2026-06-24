@@ -1,6 +1,3 @@
-[README.md](https://github.com/user-attachments/files/29303911/README.md)
-# ComfyUI-Krea2T-Enhancer
-Krea2 Turbo Enhancement Nodes
 # ComfyUI-Krea2T-Enhancer
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow.svg)](https://buymeacoffee.com/capitan01r)
