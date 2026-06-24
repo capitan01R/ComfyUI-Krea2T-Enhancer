@@ -1,2 +1,2 @@
-# ComfyUI-Krea2-Enhancer
-Krea2 Enhancement Nodes
+# ComfyUI-Krea2T-Enhancer
+Krea2 Turbo Enhancement Nodes
