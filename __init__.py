@@ -186,11 +186,14 @@ def krea2t_enhancer_wrapper(executor, x, timesteps, context, attention_mask=None
             print("[Krea2TEnhancer] skipped: diffusion model does not match Krea2 text-fusion layout")
         return executor(x, timesteps, context, attention_mask, transformer_options, **kwargs)
 
-    strength = _bounded_float(cfg.get("strength", 1.0), 1.0, 0.0, 1.0)
+    strength = _bounded_float(cfg.get("strength", 1.0), 1.0, 0.0, 2.0)
     if strength == 0.0:
         return executor(x, timesteps, context, attention_mask, transformer_options, **kwargs)
 
     txtfusion = dm.txtfusion
+    if hasattr(txtfusion, "_krea2t_enhancer_original_forward"):
+        txtfusion.forward = txtfusion._krea2t_enhancer_original_forward
+        delattr(txtfusion, "_krea2t_enhancer_original_forward")
     original_forward = txtfusion.forward
     progress, sigma = _step_progress(transformer_options)
     debug_enabled = bool(cfg.get("debug", False))
@@ -237,7 +240,7 @@ class ComfyUIKrea2TEnhancer:
             "required": {
                 "model": ("MODEL",),
                 "enabled": ("BOOLEAN", {"default": True}),
-                "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.05}),
+                "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "debug": ("BOOLEAN", {"default": False}),
             }
         }
@@ -253,7 +256,7 @@ class ComfyUIKrea2TEnhancer:
 
     def apply(self, model, enabled=True, strength=1.0, debug=False):
         patched = model.clone()
-        strength = _bounded_float(strength, 1.0, 0.0, 1.0)
+        strength = _bounded_float(strength, 1.0, 0.0, 2.0)
         to = patched.model_options.setdefault("transformer_options", {})
         to["krea2t_prompt_adherence_enhancer"] = {
             "enabled": bool(enabled),
@@ -261,17 +264,18 @@ class ComfyUIKrea2TEnhancer:
             "debug": bool(debug),
             "max_debug_prints": 8,
         }
+        if hasattr(patched, "remove_wrappers_with_key"):
+            patched.remove_wrappers_with_key(
+                comfy.patcher_extension.WrappersMP.DIFFUSION_MODEL,
+                WRAPPER_KEY,
+            )
+        wrappers = to.get("wrappers", {})
+        diffusion_wrappers = wrappers.get(comfy.patcher_extension.WrappersMP.DIFFUSION_MODEL, {})
+        diffusion_wrappers.pop(WRAPPER_KEY, None)
         patched.add_wrapper_with_key(
             comfy.patcher_extension.WrappersMP.DIFFUSION_MODEL,
             WRAPPER_KEY,
             krea2t_enhancer_wrapper,
-        )
-        comfy.patcher_extension.add_wrapper_with_key(
-            comfy.patcher_extension.WrappersMP.DIFFUSION_MODEL,
-            WRAPPER_KEY,
-            krea2t_enhancer_wrapper,
-            patched.model_options,
-            is_model_options=True,
         )
         if debug:
             print(f"[Krea2TEnhancer] attached enabled={bool(enabled)} strength={strength:.3f}")
