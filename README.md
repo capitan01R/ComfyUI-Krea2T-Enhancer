@@ -38,7 +38,7 @@ Use your normal Krea2 text encoder, VAE, latent, and sampler setup.
 | Parameter | Default | Meaning |
 |---|---:|---|
 | `enabled` | `true` | Turns the patch on or off. |
-| `strength` | `1.0` | Blends the enhancement from neutral `0.0` to full `1.0`. |
+| `strength` | `1.0` | Blends the enhancement from neutral `0.0` to full `2.0`. |
 | `debug` | `false` | Prints concise runtime diagnostics to the ComfyUI console. |
 
 ## Notes
