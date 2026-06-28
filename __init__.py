@@ -250,10 +250,6 @@ class ComfyUIKrea2TEnhancer:
     FUNCTION = "apply"
     CATEGORY = "conditioning/krea2"
 
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return float("NaN")
-
     def apply(self, model, enabled=True, strength=1.0, debug=False):
         patched = model.clone()
         strength = _bounded_float(strength, 1.0, 0.0, 2.0)
