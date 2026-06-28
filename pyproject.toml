@@ -1,7 +1,7 @@
 [project]
 name = "ComfyUI-Krea2T-Enhancer"
 description = "Krea2 Turbo Enhancement Nodes"
-version = "1.0.1"
+version = "1.0.2"
 license = {file = "LICENSE"} 
 # classifiers = [
 #     # For OS-independent nodes (works on all operating systems)
