@@ -26,6 +26,8 @@ No extra Python packages are required beyond a working ComfyUI Krea2 setup.
 | **Krea2 Turbo Reference Sigmas (From Latent)** | `SIGMAS`, `LATENT` | Builds a Turbo sigma schedule based on the official Krea 2 Turbo scheduler settings and validates the connected latent dimensions. |
 | **Krea2 Text Encode — Attention-Weighted Phrases** | `MODEL`, `CONDITIONING`, `STRING` | Encodes weighted phrases and changes only the image-query-to-selected-text-key attention odds in Krea2's shared DiT blocks. |
 | **Krea2T Character LoRA — Image Only** | `MODEL`, `STRING` | Applies a character LoRA directly to image tokens while skipping unsupported weights. |
+| **Krea2 Selective LoRA Loader Model Only (Projection Split)** | `MODEL`, `STRING` | Alternative model-only loader with switches for the Krea2 projector, remaining TextFusion path, and external text MLP. |
+| **Krea2 · Projector + External MLP · LoRA Isolation** | `MODEL`, `STRING` | Applies only selected saved LoRA updates for the projector and the two external text-MLP linear layers. |
 
 ## Character LoRA — Image Only
 
@@ -121,6 +123,23 @@ file leaves part of the old loader installed. The report's
 `adapter_scale_range` shows the saved scaling before your strength setting.
 
 </details>
+
+
+## Selective LoRA Loader — Model Only
+
+This is an extra utility for LoRAs that do not work well with the
+**Character LoRA — Image Only** loader. It is not the same token-level image
+isolation method: instead, it uses ComfyUI's normal model-only LoRA loading and
+lets you choose whether the Krea2 text-conditioning branches are included.
+
+Use `load_projection`, `load_textfusion`, and `load_txtmlp` to independently
+keep or remove the `txtfusion.projector`, the remaining `txtfusion` layers, and
+the external `txtmlp` updates. All other LoRA tensors remain eligible to load.
+The `report` output shows how many tensors were found and kept in each branch.
+
+The paired **Projector + External MLP · LoRA Isolation** node is a small testing
+utility for applying only the saved projector and external text-MLP deltas from
+a reference adapter.
 
 ## Usage
 
